@@ -10,8 +10,6 @@ The required role are specified on role-gitlabrunner.yml file regarding least pr
 
   The installation is done using helm. Change gitlabUrl, runnerRegistrationToken, clusterWideAccess, image, tags and protected values in values.yaml to your desired state.
   
-  The differences between original values and desired values are also mention in values.patch file in here.
-
 1-2 Adjust roles for "default" SA
 
   After creation of gitlab-runner namespace, the default  SA (service account) will be created. Since this SA is utilized to deploy monitoring resources to k8s cluster namespaces, some extra role are added to it.
@@ -25,9 +23,7 @@ The required role are specified on role-gitlabrunner.yml file regarding least pr
   helm repo add gitlab https://charts.gitlab.io
   
   helm repo update
-  
-  helm apply values.path
-  
+    
   helm upgrade --install gitlabrunner -n gitlabrunner -f values.yaml gitlab/gitlab-runner
 
 After that you should see green status under Available specific runners part.
