@@ -1,0 +1,190 @@
+### This role is consider thanos as namespace where alertmanager and rules are going to be deployed on it. also prometheus-blackbox namespace is considered where the blackbox are going to be deployed there.
+### ClusterRoles for default sa in gitlabrunner namespace ###
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: gitlab-runner-wide
+  namespace: gitlabrunner
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - list
+  - create
+- apiGroups:
+  - ""
+  resources:
+  - endpoints
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - services
+  - serviceaccounts
+  verbs:
+  - get
+  - create
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - create
+- apiGroups: ["monitoring.coreos.com"]
+  resources: ["servicemonitors"]
+  verbs: ["list", "get", "create", "delete", "update", "patch"]
+- apiGroups: ["monitoring.coreos.com"]
+  resources: ["prometheusrules"]
+  verbs: ["list", "get", "create", "delete", "update","ptach"]
+- apiGroups: ["monitoring.coreos.com"]
+  resources: ["probes"]
+  verbs: ["list", "get", "create", "delete", "update", "patch"]
+- apiGroups: ["monitoring.coreos.com"]
+  resources: ["alertmanagers"]
+  verbs: ["*","list", "get", "create", "delete", "update", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: "ClusterRoleBinding"
+metadata:
+  name: gitlab-runner-wide
+  labels:
+    app: gitlab-runner-wide
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: "ClusterRole"
+  name: gitlab-runner-wide
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: "gitlabrunner"
+---
+### Roles in gitlabrunner namespace for default sa in gitlabrunner namespace ###
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: gitlab-runner-local
+  namespace: gitlabrunner
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - list
+  - create
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - create
+  - get
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - pods/exec
+  - pods/attach
+  verbs:
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: "RoleBinding"
+metadata:
+  name: gitlab-runner-local
+  namespace: gitlabrunner
+  labels:
+    app: gitlab-runner-local
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: "Role"
+  name: gitlab-runner-local
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: "gitlabrunner"
+---
+### Roles in thanos namespace for default sa in gitlabrunner namespace ###
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: gitlab-runner-thanos
+  namespace: thanos
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - create
+- apiGroups:
+  - "apps"
+  resources:
+  - statefulsets
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - serviceaccounts
+  verbs:
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: "RoleBinding"
+metadata:
+  name: gitlab-runner-thanos
+  namespace: thanos
+  labels:
+    app: gitlab-runner-thanos
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: "Role"
+  name: gitlab-runner-thanos
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: "gitlabrunner"
+---
+### Roles in blackbox namespace for default sa in gitlabrunner namespace ###
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: gitlab-runner-blackbox
+  namespace: prometheus-blackbox
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: "RoleBinding"
+metadata:
+  name: gitlab-runner-blackbox
+  namespace: prometheus-blackbox
+  labels:
+    app: gitlab-runner-blackbox
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: "Role"
+  name: gitlab-runner-blackbox
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: "gitlabrunner"
