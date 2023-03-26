@@ -1,6 +1,6 @@
 # helm-gitlabrunner-monitoring
 
-The helm chart to deploy different prometheus resources (blackbox-servicemonitor-alertmanager-rule) on various k8s namesapaces
+The helm chart to deploy gitlab runner for configuring different prometheus resources (blackbox-servicemonitor-alertmanager-rule) on various k8s namesapaces. (see https://github.com/rezaebrahimi1/cd-thanos)
 
 The required role are specified on role-gitlabrunner.yml file regarding least priviledge principle.
 
